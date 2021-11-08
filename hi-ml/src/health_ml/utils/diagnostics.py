@@ -216,7 +216,6 @@ class BatchTimeCallback(Callback):
                              pl_module: LightningModule,
                              batch: Any,
                              batch_idx: int,
-                             dataloader_idx: int,
                              ) -> None:
         self.batch_start(batch_idx=batch_idx, is_training=True)
 

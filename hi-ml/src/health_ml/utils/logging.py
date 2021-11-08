@@ -238,9 +238,8 @@ def log_on_epoch(module: LightningModule,
                  name: Optional[str] = None,
                  value: Optional[Any] = None,
                  metrics: Optional[Mapping[str, Any]] = None,
-                 reduce_fx: Callable = torch.mean,
-                 sync_dist: Optional[bool] = None,
-                 sync_dist_op: Any = "mean") -> None:
+                 reduce_fx: Callable = "mean",
+                 sync_dist: Optional[bool] = None) -> None:
     """
     Write a dictionary with metrics and/or an individual metric as a name/value pair to the loggers of the given module.
     Metrics are always logged upon epoch completion.
@@ -256,10 +255,8 @@ def log_on_epoch(module: LightningModule,
     :param sync_dist: If not None, use this value for the sync_dist argument to module.log. If None,
         set it automatically depending on the use of DDP. Set this to False if you want to log metrics that are only
         available on Rank 0 of a DDP job.
-    :param reduce_fx: The reduce function to apply to the per-step values, after synchronizing the tensors across GPUs.
-        Default: torch.mean
-    :param sync_dist_op: The reduce operation to use when synchronizing the tensors across GPUs. This must be
-        a value recognized by sync_ddp: 'sum', 'mean', 'avg'
+    :param reduce_fx: The reduce function to use when synchronizing the tensors across GPUs.
+        Default: "mean"
     """
     assert module.trainer is not None, "No trainer is set for this module."
     if operator.xor(name is None, value is None):
@@ -278,8 +275,7 @@ def log_on_epoch(module: LightningModule,
                     on_epoch=True,
                     on_step=False,
                     sync_dist=is_sync_dist,
-                    reduce_fx=reduce_fx,
-                    sync_dist_op=sync_dist_op)
+                    reduce_fx=reduce_fx)
 
 
 def log_learning_rate(module: LightningModule, name: str = "learning_rate") -> None:
